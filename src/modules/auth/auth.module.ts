@@ -1,11 +1,11 @@
 import { ErrorDataService } from './../../common/http/error-data.service';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { DataService } from 'src/common/http/data.service';
 import { JwtModule } from '@nestjs/jwt';
 import { HttpModule } from '@nestjs/axios';
-
+import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 @Module({
   imports: [
     HttpModule,
@@ -18,4 +18,8 @@ import { HttpModule } from '@nestjs/axios';
   providers: [AuthService, DataService, ErrorDataService],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+}
